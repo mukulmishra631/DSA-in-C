@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ultimate Realistic Animation: Walking Person Smoking</title>
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      overflow: hidden;
+      background: #87ceeb; /* sky blue */
+      font-family: sans-serif;
+    }
+    /* Scene setup: a park with a sky gradient and grassy ground */
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to top, #4caf50, #8bc34a 60%, #87ceeb);
+      overflow: hidden;
+    }
+    .ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 150px;
+      background: #4caf50;
+    }
+    /* Trees */
+    .tree {
+      position: absolute;
+      bottom: 150px;
+      width: 60px;
+      height: 120px;
+    }
+    .tree .trunk {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 60px;
+      background: #8b5a2b;
+    }
+    .tree .leaves {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: #228B22;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    /* Position two trees */
+    #tree1 { left: 10%; }
+    #tree2 { left: 70%; }
+
+    /* PERSON: articulated figure with joints and realistic swing */
+    .person {
+      position: absolute;
+      bottom: 150px;
+      width: 80px;
+      height: 180px; /* reduced height for a tighter torso-to-leg transition */
+    }
+    /* Head */
+    .person .head {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      background: #f4c7ab;
+      border: 2px solid #d2a679;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .person .head .eyes {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      width: 16px;
+      height: 6px;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+    }
+    .person .head .eyes div {
+      width: 4px;
+      height: 4px;
+      background: #000;
+      border-radius: 50%;
+    }
+    /* Body (torso + belly) */
+    .person .body {
+      position: absolute;
+      top: 45px;
+      left: 50%;
+      width: 30px;
+      height: 70px; /* increased slightly for a fuller torso */
+      background: #555;
+      border-radius: 5px;
+      transform: translateX(-50%);
+    }
+    /* ARMS (each arm has an upper arm, lower arm, and hand) */
+    .person .arm {
+      position: absolute;
+      width: 40px;
+      height: 10px;
+    }
+    /* Left Arm */
+    .person .arm.left {
+      top: 50px;
+      left: -10px;
+    }
+    .person .arm.left .upper {
+      position: absolute;
+      width: 20px;
+      height: 10px;
+      background: #f4c7ab;
+      border-radius: 5px;
+      transform-origin: left center;
+    }
+    .person .arm.left .lower {
+      position: absolute;
+      left: 20px;
+      width: 20px;
+      height: 10px;
+      background: #f4c7ab;
+      border-radius: 5px;
+      transform-origin: left center;
+    }
+    .person .arm.left .hand {
+      position: absolute;
+      left: 20px;
+      width: 8px;
+      height: 8px;
+      background: #f4c7ab;
+      border-radius: 50%;
+      transform: translateY(2px);
+    }
+    /* Right Arm (holds the cigarette) */
+    .person .arm.right {
+      position: absolute;
+      top: 50px;
+      right: -10px;
+    }
+    .person .arm.right .upper {
+      position: absolute;
+      width: 20px;
+      height: 10px;
+      background: #f4c7ab;
+      border-radius: 5px;
+      transform-origin: right center;
+    }
+    .person .arm.right .lower {
+      position: absolute;
+      right: 20px;
+      width: 20px;
+      height: 10px;
+      background: #f4c7ab;
+      border-radius: 5px;
+      transform-origin: right center;
+    }
+    .person .arm.right .hand {
+      position: absolute;
+      right: 20px;
+      width: 8px;
+      height: 8px;
+      background: #f4c7ab;
+      border-radius: 50%;
+      transform: translateY(2px);
+    }
+    /* The cigarette inside the right hand */
+    .cigarette {
+      position: absolute;
+      top: 2px;
+      right: -30px;
+      width: 40px;
+      height: 6px;
+      background: linear-gradient(to right, #fff 70%, #b87333 80%, #a52a2a 90%, #ff4500 100%);
+      border-radius: 3px;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+    .cigarette .cig-body {
+      width: 100%;
+      height: 100%;
+      border-radius: 3px;
+    }
+    .cigarette .cig-ember {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, #ff4500, #b22222, #000);
+      border-radius: 50%;
+      box-shadow: 0 0 10px 4px rgba(255,69,0,0.8);
+    }
+    /* LEGS (each leg is split into upper, lower, and foot segments) */
+    .person .leg {
+      position: absolute;
+      width: 15px;
+      height: 50px;
+    }
+    /* Left Leg */
+    .person .leg.left {
+      top: calc(45px + 70px); /* legs start right below the body (45 + 70 = 115px) */
+      left: 10px;
+    }
+    .person .leg.left .upper {
+      position: absolute;
+      width: 100%;
+      height: 25px;
+      background: #333;
+      transform-origin: top center;
+    }
+    .person .leg.left .lower {
+      position: absolute;
+      top: 25px;
+      width: 100%;
+      height: 25px;
+      background: #555;
+      transform-origin: top center;
+    }
+    .person .leg.left .foot {
+      position: absolute;
+      bottom: 0;
+      width: 15px;
+      height: 8px;
+      background: #222;
+      border-radius: 2px;
+    }
+    /* Right Leg */
+    .person .leg.right {
+      top: calc(45px + 70px); /* legs start right below the body */
+      right: 10px;
+    }
+    .person .leg.right .upper {
+      position: absolute;
+      width: 100%;
+      height: 25px;
+      background: #333;
+      transform-origin: top center;
+    }
+    .person .leg.right .lower {
+      position: absolute;
+      top: 25px;
+      width: 100%;
+      height: 25px;
+      background: #555;
+      transform-origin: top center;
+    }
+    .person .leg.right .foot {
+      position: absolute;
+      bottom: 0;
+      width: 15px;
+      height: 8px;
+      background: #222;
+      border-radius: 2px;
+    }
+    /* Smoke container for dynamic smoke particles */
+    .smoke-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .smoke-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="ground"></div>
+    <div class="tree" id="tree1">
+      <div class="trunk"></div>
+      <div class="leaves"></div>
+    </div>
+    <div class="tree" id="tree2">
+      <div class="trunk"></div>
+      <div class="leaves"></div>
+    </div>
+    <div class="person" id="person">
+      <div class="head">
+        <div class="eyes">
+          <div></div><div></div>
+        </div>
+      </div>
+      <div class="body"></div>
+      <div class="arm left">
+        <div class="upper"></div>
+        <div class="lower"></div>
+        <div class="hand"></div>
+      </div>
+      <div class="arm right">
+        <div class="upper"></div>
+        <div class="lower"></div>
+        <div class="hand">
+          <div class="cigarette">
+            <div class="cig-body"></div>
+            <div class="cig-ember"></div>
+          </div>
+        </div>
+      </div>
+      <div class="leg left">
+        <div class="upper"></div>
+        <div class="lower"></div>
+        <div class="foot"></div>
+      </div>
+      <div class="leg right">
+        <div class="upper"></div>
+        <div class="lower"></div>
+        <div class="foot"></div>
+      </div>
+    </div>
+    <div class="smoke-container" id="smokeContainer"></div>
+  </div>
+  <script>
+    // JavaScript Animation Logic
+    const person = document.getElementById('person');
+    const leftUpperArm = document.querySelector('.arm.left .upper');
+    const leftLowerArm = document.querySelector('.arm.left .lower');
+    const rightUpperArm = document.querySelector('.arm.right .upper');
+    const rightLowerArm = document.querySelector('.arm.right .lower');
+    const leftUpperLeg = document.querySelector('.leg.left .upper');
+    const leftLowerLeg = document.querySelector('.leg.left .lower');
+    const rightUpperLeg = document.querySelector('.leg.right .upper');
+    const rightLowerLeg = document.querySelector('.leg.right .lower');
+    const smokeContainer = document.getElementById('smokeContainer');
+
+    let lastFrameTime = null;
+    const walkDuration = 10000; // 10 seconds to cross the screen
+    const screenWidth = window.innerWidth;
+    const personWidth = 80;
+
+    let smokeParticles = [];
+    let lastSmokeTime = 0;
+
+    function createSmokeParticle(x, y) {
+      const particle = document.createElement('div');
+      particle.classList.add('smoke-particle');
+      particle.style.left = x + 'px';
+      particle.style.top = y + 'px';
+      smokeContainer.appendChild(particle);
+      return { element: particle, x: x, y: y, opacity: 0.8, scale: 1 };
+    }
+
+    function updateSmokeParticles(deltaTime) {
+      for (let i = smokeParticles.length - 1; i >= 0; i--) {
+        let p = smokeParticles[i];
+        p.y -= deltaTime * 0.05;
+        p.scale += deltaTime * 0.0005;
+        p.opacity -= deltaTime * 0.0005;
+        p.element.style.top = p.y + 'px';
+        p.element.style.transform = 'scale(' + p.scale + ')';
+        p.element.style.opacity = p.opacity;
+        if (p.opacity <= 0) {
+          smokeContainer.removeChild(p.element);
+          smokeParticles.splice(i, 1);
+        }
+      }
+    }
+
+    function animate(timestamp) {
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      const deltaTime = timestamp - lastFrameTime;
+      lastFrameTime = timestamp;
+      
+      // Update horizontal position of the person (wrap-around)
+      const progress = (timestamp % walkDuration) / walkDuration;
+      const xPos = progress * (screenWidth + personWidth) - personWidth;
+      person.style.left = xPos + 'px';
+
+      // Calculate a swing cycle based on a 1000ms period
+      const cycle = (timestamp % 1000) / 1000;
+      const armSwing = 20 * Math.sin(cycle * 2 * Math.PI);
+      const lowerArmSwing = 10 * Math.sin(cycle * 2 * Math.PI + Math.PI / 4);
+      const legSwing = 20 * Math.sin(cycle * 2 * Math.PI + Math.PI);
+      const lowerLegSwing = 10 * Math.sin(cycle * 2 * Math.PI + Math.PI + Math.PI / 4);
+
+      leftUpperArm.style.transform = 'rotate(' + (-armSwing) + 'deg)';
+      leftLowerArm.style.transform = 'rotate(' + (-lowerArmSwing) + 'deg)';
+      rightUpperArm.style.transform = 'rotate(' + (armSwing) + 'deg)';
+      rightLowerArm.style.transform = 'rotate(' + (lowerArmSwing) + 'deg)';
+
+      leftUpperLeg.style.transform = 'rotate(' + (legSwing) + 'deg)';
+      leftLowerLeg.style.transform = 'rotate(' + (lowerLegSwing) + 'deg)';
+      rightUpperLeg.style.transform = 'rotate(' + (-legSwing) + 'deg)';
+      rightLowerLeg.style.transform = 'rotate(' + (-lowerLegSwing) + 'deg)';
+
+      // Generate smoke particles from the cigarette ember
+      const ember = document.querySelector('.cigarette .cig-ember');
+      if (ember) {
+        const rect = ember.getBoundingClientRect();
+        if (timestamp - lastSmokeTime > 200) {
+          const particle = createSmokeParticle(rect.left + rect.width / 2, rect.top);
+          smokeParticles.push(particle);
+          lastSmokeTime = timestamp;
+        }
+      }
+
+      updateSmokeParticles(deltaTime);
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
