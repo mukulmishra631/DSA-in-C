@@ -20,7 +20,6 @@ int indInsertion(int arr[], int size, int element, int capacity, int index){
     return 1; // 1 denotes success
 }
 
-
 int main(){
     int arr[100] = {7, 8, 12, 27, 88};
     int size = 5, element = 45, index = 3;
@@ -28,6 +27,6 @@ int main(){
     indInsertion(arr, size, element, 100, index);
     size += 1;
     display(arr, size);
-
+    //if the function
     return 0;
 }

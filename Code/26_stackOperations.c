@@ -46,7 +46,7 @@ int pop(struct stack *ptr)
     if (isEmpty(ptr))
     {
         printf("Stack underflow! Cannot pop %d from the stack\n");
-        return -1; // Assuming that -1 will not be an element in the stack
+        return -1; // Assuming that -1 will not be an element in the stack (this element will not be inserted in the stack because it will cause the rules to break because -1 is an integer and we cannot return -1 while it is in the stack so -1 is assumed to be not present in the stack by default otherwise it will cause error)
     }
     else
     {

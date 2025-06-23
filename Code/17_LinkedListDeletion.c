@@ -17,7 +17,8 @@ void linkedListTraversal(struct Node *ptr)
     }
 }
 
-// Case 1 - Deleting the first node
+
+// Case 1 - Delet1ing the first node
 // struct Node *deleteFirstNode(struct Node *head)
 // {
 //     struct Node *ptr = head;

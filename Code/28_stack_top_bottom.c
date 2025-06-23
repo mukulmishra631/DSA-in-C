@@ -65,7 +65,7 @@ int peek(struct stack *sp, int i)
         return -1;
     }
     else
-    {
+    { 
         return sp->arr[arrayInd];
     }
 }
@@ -95,10 +95,9 @@ int main()
     push(sp, 89);
     push(sp, 34);
     push(sp, 677);
-    push(sp, 9);
+    push(sp, 75);
     push(sp, 12); // ---> Pushed 8 elements (LIFO)
     push(sp, 15); // This is the 9th element so will cause stack overflow since the size of the stack is 8
-
     printf("After pushing, Full : %d\n", isFull(sp));
     printf("After pushing, Empty : %d\n", isEmpty(sp));
 
